@@ -1,0 +1,7 @@
+[project]
+name = "helloRL"
+version = "1.0"
+description = "A fully modular framework to make Reinforcement Learning quick and easy"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
