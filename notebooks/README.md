@@ -1,0 +1,3 @@
+Notebooks are saved as .py files, which cleans up the git commit history, and keeps them lightweight.
+
+I would recommend opening these via [Jupytext Sync extension](https://marketplace.visualstudio.com/items?itemName=caenrigen.jupytext-sync) in VS Code. Right click on the .py file you're interested in, "Pair via JupyText", and open the ipynb. Changes to the ipynb will be reflected in the .py file, but outputs etc are not saved. ipynb files are gitignored, so this file itself will not be saved.
