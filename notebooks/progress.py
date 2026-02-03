@@ -23,9 +23,10 @@
 # Also has features to work with remote training runs. It simulates it for these tests, it doesn't actually do any remote training or require any account.
 
 # %%
-import helloRL.utils.progress as progress
 import random
 import time
+
+from helloRL.utils import progress
 
 n_epochs = 140
 bar = progress.StepProgressBar("Training", n_steps=n_epochs, minigraph=True)
@@ -37,9 +38,10 @@ for epoch in range(n_epochs):
     bar.update(loss)
 
 # %%
-import helloRL.utils.progress as progress
 import random
 import time
+
+from helloRL.utils import progress
 
 n_steps = 1000
 increments = 10
@@ -53,9 +55,10 @@ with progress.StepProgressBar("Training", n_steps=n_steps, increments=increments
         bar.update(score)
 
 # %%
-import helloRL.utils.progress as progress
 import random
 import time
+
+from helloRL.utils import progress
 
 n_epochs = 40
 
@@ -68,9 +71,10 @@ with progress.EpochProgressBar("Training", n_epochs=n_epochs, minigraph=True) as
         bar.update(loss)
 
 # %%
-import helloRL.utils.progress as progress
 import random
 import time
+
+from helloRL.utils import progress
 
 n_epochs = 40
 
@@ -89,8 +93,9 @@ go()
 # Modal progress bar
 
 # %%
-import helloRL.utils.progress as progress
 import time
+
+from helloRL.utils import progress
 
 n_timesteps = 1000
 
@@ -101,8 +106,9 @@ with progress.ProgressBar("Training", n_steps=n_timesteps) as bar:
         time.sleep(0.05)
 
 # %%
-import helloRL.utils.progress as progress
 import time
+
+from helloRL.utils import progress
 
 n_timesteps = 1000
 
@@ -122,8 +128,9 @@ with progress.RemoteProgressBar("Training", n_steps=n_timesteps, n_sessions=10) 
         time.sleep(0.005)
 
 # %%
-import helloRL.utils.progress as progress
 import time
+
+from helloRL.utils import progress
 
 n_timesteps = 1000
 

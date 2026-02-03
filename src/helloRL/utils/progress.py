@@ -158,8 +158,6 @@ class ProgressBar:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-
-
 class RemoteProgressBar(ProgressBar):
     def __init__(self, title, n_steps, n_sessions):
         super().__init__(title, n_steps)

@@ -22,7 +22,8 @@
 # %%
 import torch
 import gymnasium as gym
-import helloRL.utils.sim as sim
+
+from helloRL.utils import sim
 
 
 # %%
