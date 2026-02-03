@@ -3,5 +3,16 @@ name = "helloRL"
 version = "1.0"
 description = "A fully modular framework to make Reinforcement Learning quick and easy"
 readme = "README.md"
-requires-python = ">=3.11"
-dependencies = []
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Andrew Hart" }]
+dependencies = [
+    "gymnasium[box2d]>=1.2.3",
+    "numpy>=2.2.6",
+    "pillow>=12.1.0",
+    "torch>=2.10.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
