@@ -15,9 +15,7 @@
 # ---
 
 # %% [markdown]
-# - adapted from 260107-02
-#
-# WIP Replay
+# For testing the features of modular.replay
 
 # %%
 import torch

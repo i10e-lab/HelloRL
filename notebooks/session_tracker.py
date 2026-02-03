@@ -14,6 +14,9 @@
 #     name: python3
 # ---
 
+# %% [markdown]
+# for testing the features of utils.session_tracker
+
 # %%
 import random
 import torch
