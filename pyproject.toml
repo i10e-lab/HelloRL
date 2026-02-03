@@ -11,6 +11,7 @@ dependencies = [
     "numpy>=2.2.6",
     "pillow>=12.1.0",
     "torch>=2.10.0",
+    "tqdm>=4.67.3",
 ]
 
 [build-system]

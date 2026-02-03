@@ -14,6 +14,11 @@
 #     name: python3
 # ---
 
+# %% [markdown]
+# For testing the features of utils.sim
+#
+# sim is a wrapper on Gymnasium which adds a few nice features, like overlays and in-line rendering
+
 # %%
 import torch
 import gymnasium as gym
