@@ -8,8 +8,10 @@ license = { file = "LICENSE" }
 authors = [{ name = "Andrew Hart" }]
 dependencies = [
     "gymnasium[box2d]>=1.2.3",
+    "matplotlib>=3.10.8",
     "numpy>=2.2.6",
     "pillow>=12.1.0",
+    "scipy>=1.15.3",
     "torch>=2.10.0",
     "tqdm>=4.67.3",
 ]
