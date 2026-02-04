@@ -42,19 +42,6 @@ def gather_modal_results_for_calls(calls, n_timesteps, n_sessions, progress_dict
 
     return results
 
-app = modal.App(name='helloRL')
-
-image = modal.Image.debian_slim()\
-    .apt_install('swig', 'build-essential')\
-        .pip_install("gymnasium", "torch", "gymnasium[box2d]", "numpy", "stable_baselines3")\
-        .add_local_dir('src/modular', remote_path='/root/src/modular')\
-        .add_local_python_source('src.session_tracker', 'src.modal_training')
-
-
-
-
-
-
 def train_session_on_modal_with_func(train_func, session_id, n_timesteps, progress_dict):
     def progress_callback(current_timestep):
         progress_dict[session_id] = current_timestep
@@ -64,25 +51,32 @@ def train_session_on_modal_with_func(train_func, session_id, n_timesteps, progre
 
     return train_func_return
 
+def create_modal_train_function(app, image, timeout=3600):
+    @app.function(image=image, timeout=timeout, serialized=True)
+    def _modal_train(n_timesteps, setup_func, session_id=None, progress_dict=None):
+        agent, env_name, continuous, params = setup_func()
 
-@app.function(image=image, timeout=86400)
-def _modal_train(n_timesteps, setup_func, session_id=None, progress_dict=None):
-    agent, env_name, continuous, params = setup_func()
+        training_func = partial(trainer.train, agent, env_name, continuous=continuous, 
+                               n_timesteps=n_timesteps, should_print=False)
+        
+        train_results = train_session_on_modal_with_func(training_func, session_id, 
+                                                          n_timesteps, progress_dict)
+        
+        return (*train_results, agent, env_name, continuous, params)
+    
+    return _modal_train
 
-    training_func = partial(trainer.train, agent, env_name, continuous=continuous, n_timesteps=n_timesteps, should_print=False)
+def train(n_sessions, n_timesteps, setup_func, app, image, timeout=3600):
+    # Create the modal function before entering app.run() so it gets registered
+    modal_train = create_modal_train_function(app, image, timeout)
 
-    train_results = train_session_on_modal_with_func(training_func, session_id, n_timesteps, progress_dict)
-
-    return (*train_results, agent, env_name, continuous, params)
-
-def train(n_sessions, n_timesteps, setup_func):
     with app.run():
         progress_dict = modal.Dict.from_name("training-progress", create_if_missing=True)
         progress_dict.clear()
 
-        calls = [_modal_train.spawn(n_timesteps, setup_func=setup_func, session_id=i, progress_dict=progress_dict
+        calls = [modal_train.spawn(n_timesteps, setup_func=setup_func, session_id=i, progress_dict=progress_dict
         ) for i in range(n_sessions)]
-        
+
         results = gather_modal_results_for_calls(calls, n_timesteps, n_sessions, progress_dict)
 
     return results

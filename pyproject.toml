@@ -8,6 +8,7 @@ license = { file = "LICENSE" }
 authors = [{ name = "Andrew Hart" }]
 dependencies = [
     "gymnasium[box2d]>=1.2.3",
+    "ipynbname>=2025.8.0.0",
     "matplotlib>=3.10.8",
     "modal>=1.3.2",
     "numpy>=2.2.6",
