@@ -6,6 +6,8 @@ from typing import Callable
 
 from helloRL.modular.rollout_data import RolloutData
 
+HIDDEN_SIZES_DEFAULT = [64, 64]
+
 class CriticProtocol(ABC):
     @abstractmethod
     def output(self, state: torch.Tensor, action: torch.Tensor) -> torch.Tensor:
@@ -38,13 +40,26 @@ class CriticProtocol(ABC):
         pass
 
 class CriticNetwork(nn.Module):
-    def __init__(self, state_dim, hidden_size=64):
+    def __init__(self, state_dim, hidden_sizes=HIDDEN_SIZES_DEFAULT):
         super(CriticNetwork, self).__init__()
-        self.fc1 = nn.Linear(state_dim, hidden_size, dtype=torch.float32)
-        self.head = nn.Linear(hidden_size, 1, dtype=torch.float32)
+
+        self.hidden_layers = nn.ModuleList()
+
+        prev_size = state_dim
+
+        for size in hidden_sizes:
+            layer = nn.Linear(prev_size, size, dtype=torch.float32)
+            self.hidden_layers.append(layer)
+            prev_size = size
+
+        self.head = nn.Linear(prev_size, 1, dtype=torch.float32)
 
     def forward(self, state, action): # value: (batch_size, 1)
-        x = torch.relu(self.fc1(state))
+        x = state
+
+        for layer in self.hidden_layers:
+            x = torch.relu(layer(x))
+
         value = self.head(x)
         return value
 
@@ -68,9 +83,9 @@ class CriticParams:
     )
 
 class Critic(CriticProtocol, nn.Module):
-    def __init__(self, state_dim, hidden_size=64, params=CriticParams()):
+    def __init__(self, state_dim, hidden_sizes=HIDDEN_SIZES_DEFAULT, params=CriticParams()):
         super(Critic, self).__init__()
-        self.network = CriticNetwork(state_dim, hidden_size=hidden_size)
+        self.network = CriticNetwork(state_dim, hidden_sizes=hidden_sizes)
         self.params = params
 
     def forward(self, state, action): # value: (batch_size, 1)
@@ -87,21 +102,33 @@ class Critic(CriticProtocol, nn.Module):
         return critic_loss
     
 class QCriticNetwork(nn.Module):
-    def __init__(self, state_dim, action_dim, hidden_size=64):
+    def __init__(self, state_dim, action_dim, hidden_sizes=HIDDEN_SIZES_DEFAULT):
         super(QCriticNetwork, self).__init__()
-        self.fc1 = nn.Linear(state_dim + action_dim, hidden_size, dtype=torch.float32)
-        self.head = nn.Linear(hidden_size, 1, dtype=torch.float32)
+        
+        self.hidden_layers = nn.ModuleList()
+
+        prev_size = state_dim + action_dim
+
+        for size in hidden_sizes:
+            layer = nn.Linear(prev_size, size, dtype=torch.float32)
+            self.hidden_layers.append(layer)
+            prev_size = size
+
+        self.head = nn.Linear(prev_size, 1, dtype=torch.float32)
 
     def forward(self, state, action): # value: (batch_size, 1)
         x = torch.cat([state, action], dim=-1)
-        x = torch.relu(self.fc1(x))
+
+        for layer in self.hidden_layers:
+            x = torch.relu(layer(x))
+
         value = self.head(x)
         return value
     
 class QCritic(CriticProtocol, nn.Module):
-    def __init__(self, state_dim, action_dim, hidden_size=64, params=CriticParams()):
+    def __init__(self, state_dim, action_dim, hidden_sizes=HIDDEN_SIZES_DEFAULT, params=CriticParams()):
         super(QCritic, self).__init__()
-        self.network = QCriticNetwork(state_dim, action_dim, hidden_size=hidden_size)
+        self.network = QCriticNetwork(state_dim, action_dim, hidden_sizes=hidden_sizes)
         self.params = params
 
     def forward(self, state, action): # value: (batch_size, 1)

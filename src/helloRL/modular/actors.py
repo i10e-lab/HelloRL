@@ -5,6 +5,8 @@ from torch.distributions import Categorical, Normal
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 
+HIDDEN_SIZES_DEFAULT = [64, 64]
+
 class ActorProtocol(ABC):
     @abstractmethod
     def output(self, state: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
@@ -85,16 +87,29 @@ class DistributionalActorParams(ActorParams):
     policy_objective_method: PolicyObjectiveMethod = field(
         default_factory=PolicyObjectiveMethodStandard
     )
-    entropy_coef: float = 0.01
+    entropy_coef: float = 0.0
 
 class DiscreteActorNetwork(nn.Module):
-    def __init__(self, state_dim, action_dim, hidden_size=64):
+    def __init__(self, state_dim, action_dim, hidden_sizes=HIDDEN_SIZES_DEFAULT):
         super(DiscreteActorNetwork, self).__init__()
-        self.fc1 = nn.Linear(state_dim, hidden_size, dtype=torch.float32)
-        self.head = nn.Linear(hidden_size, action_dim, dtype=torch.float32)
+
+        self.hidden_layers = nn.ModuleList()
+
+        prev_size = state_dim
+
+        for size in hidden_sizes:
+            layer = nn.Linear(prev_size, size, dtype=torch.float32)
+            self.hidden_layers.append(layer)
+            prev_size = size
+
+        self.head = nn.Linear(prev_size, action_dim, dtype=torch.float32)
 
     def forward(self, state): # logits: (batch_size, action_space)
-        x = torch.relu(self.fc1(state))
+        x = state
+
+        for layer in self.hidden_layers:
+            x = torch.relu(layer(x))
+
         logits = self.head(x)
         return logits
 
@@ -126,10 +141,10 @@ class DistributionalActor(ActorProtocol, nn.Module):
         return action
 
 class DiscreteActor(DistributionalActor):
-    def __init__(self, state_dim, action_dim, hidden_size=64, params=DistributionalActorParams()):
+    def __init__(self, state_dim, action_dim, hidden_sizes=HIDDEN_SIZES_DEFAULT, params=DistributionalActorParams()):
         super(DiscreteActor, self).__init__(params=params)
 
-        self.network = DiscreteActorNetwork(state_dim, action_dim, hidden_size=hidden_size)
+        self.network = DiscreteActorNetwork(state_dim, action_dim, hidden_sizes=hidden_sizes)
 
     def output(self, state): # action: (batch_size, 1), log_prob: (batch_size, 1)
         actor_logits = self.network.forward(state)
@@ -147,7 +162,7 @@ class DiscreteActor(DistributionalActor):
         return log_prob, entropy
     
 class ContinuousActorNetwork(nn.Module):
-    def __init__(self, state_dim, action_dim, action_range, hidden_sizes=[64]):
+    def __init__(self, state_dim, action_dim, action_range, hidden_sizes=HIDDEN_SIZES_DEFAULT):
         super(ContinuousActorNetwork, self).__init__()
 
         self.hidden_layers = nn.ModuleList()
@@ -178,7 +193,7 @@ class ContinuousActorNetwork(nn.Module):
         return x
     
 class StochasticActor(DistributionalActor):
-    def __init__(self, state_dim, action_dim, action_range, hidden_sizes=[64], params=DistributionalActorParams()):
+    def __init__(self, state_dim, action_dim, action_range, hidden_sizes=HIDDEN_SIZES_DEFAULT, params=DistributionalActorParams()):
         super(StochasticActor, self).__init__(params=params)
         self.network = ContinuousActorNetwork(state_dim, action_dim, action_range, hidden_sizes=hidden_sizes)
         self.log_std = nn.Parameter(torch.zeros(action_dim))
@@ -206,9 +221,9 @@ class DeterministicActorParams(ActorParams):
     exploration_std: float = 0.1
     
 class DeterministicActor(ActorProtocol, nn.Module):
-    def __init__(self, state_dim, action_dim, action_range, hidden_size=64, params=DeterministicActorParams()):
+    def __init__(self, state_dim, action_dim, action_range, hidden_sizes=HIDDEN_SIZES_DEFAULT, params=DeterministicActorParams()):
         super(DeterministicActor, self).__init__()
-        self.network = ContinuousActorNetwork(state_dim, action_dim, action_range, hidden_size=hidden_size)
+        self.network = ContinuousActorNetwork(state_dim, action_dim, action_range, hidden_sizes=hidden_sizes)
         self.params = params
 
     def forward(self, state): # action: (batch_size, 1)
