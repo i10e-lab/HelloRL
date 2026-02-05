@@ -26,4 +26,5 @@ class Params:
     lr_schedule: LRSchedule = field(
         default_factory=LRScheduleConstant
     )
+    policy_delay: int = 1
     gamma: float = 0.99

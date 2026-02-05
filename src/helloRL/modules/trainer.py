@@ -137,14 +137,15 @@ def train(agent, env_name, continuous=False, params:Params=Params(), n_timesteps
                     params.gradient_transform.apply(critic.network.parameters())
                     critic_optimizer.step()
 
-                actor_loss = agent.actor.get_loss(batch_data, agent.get_critic_value)
-                
-                actor_optimizer.zero_grad()
-                actor_loss.backward()
-                params.gradient_transform.apply(agent.actor.network.parameters())
-                actor_optimizer.step()
+                if tracker.current_timestep % params.policy_delay == 0:
+                    actor_loss = agent.actor.get_loss(batch_data, agent.get_critic_value)
+                    
+                    actor_optimizer.zero_grad()
+                    actor_loss.backward()
+                    params.gradient_transform.apply(agent.actor.network.parameters())
+                    actor_optimizer.step()
 
-                agent.update_targets()
+                    agent.update_targets()
 
         envs.close()
 
