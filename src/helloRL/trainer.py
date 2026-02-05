@@ -2,9 +2,10 @@ import gymnasium as gym
 import torch
 import torch.optim as optim
 
-from helloRL.modular.replay import ExperienceBuffer
-from helloRL.modular.foundation import *
-from helloRL.modular.params import Params
+from .modules.replay import ExperienceBuffer
+from .modules.foundation import *
+from .modules.params import Params
+from .modules.monte_carlo import RolloutMethodMonteCarlo
 
 def make_env(gym_id, continuous=False):
     def thunk():
@@ -47,8 +48,6 @@ def calculate_returns(rollout_data: RolloutData, next_critic_values: torch.Tenso
         next_returns = step_returns  # (n_envs, 1)
 
     return returns
-
-from helloRL.modular.monte_carlo import RolloutMethodMonteCarlo
 
 def collect_experiences(actor, env_name, continuous=False, n_timesteps=100000, should_print=True, gamma=0.99):
     envs = [make_env(env_name, continuous=continuous)]

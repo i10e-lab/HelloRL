@@ -2,15 +2,15 @@ import modal
 import time
 from functools import partial
 
-from helloRL.modular import trainer
-from helloRL.utils import plot
+from . import trainer
+from .utils import plot
 
 def gather_modal_results_for_calls(calls, n_timesteps, n_sessions, progress_dict):
     # Monitor progress by polling the Dict
     total_timesteps = n_sessions * n_timesteps
 
     # this file is imported to modal, but progress bar shouldn't be used there
-    from .progress import RemoteProgressBar
+    from .utils.progress import RemoteProgressBar
     
     with RemoteProgressBar("Training", n_steps=total_timesteps, n_sessions=n_sessions) as bar:
         while True:

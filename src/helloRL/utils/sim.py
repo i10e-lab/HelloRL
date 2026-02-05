@@ -1,6 +1,5 @@
 import numpy as np
 import torch
-
 import gymnasium as gym
 from PIL import Image, ImageDraw, ImageFont
 import IPython.display as ipythondisplay

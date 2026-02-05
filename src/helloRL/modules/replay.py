@@ -1,7 +1,7 @@
 import torch
 
-from helloRL.modular.rollout_data import ExperienceData
-from helloRL.modular.foundation import *
+from .rollout_data import ExperienceData
+from .foundation import *
 
 class ExperienceBuffer(ExperienceData):
     def __init__(self, capacity: int, state_dim: int, action_dim: int):

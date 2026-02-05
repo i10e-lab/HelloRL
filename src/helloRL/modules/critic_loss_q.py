@@ -1,7 +1,7 @@
 import torch
 
-from helloRL.modular.foundation import *
-from helloRL.modular.critics import CriticLossMethod
+from .foundation import *
+from .critics import CriticLossMethod
 
 class CriticLossMethodQ(CriticLossMethod):
     def compute_critic_loss(self, target_action_func, target_critic_value_func, new_values, data, gamma):

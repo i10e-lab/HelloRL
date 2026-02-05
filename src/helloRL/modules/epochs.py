@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 
-from helloRL.modular.foundation import *
+from .foundation import *
 
 class DataLoadMethodEpochs(DataLoadMethod):
     def __init__(self, n_epochs: int, mb_size: int):

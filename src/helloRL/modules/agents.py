@@ -4,8 +4,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from copy import deepcopy
 
-from helloRL.modular.actors import ActorProtocol
-from helloRL.modular.critics import CriticProtocol
+from .actors import ActorProtocol
+from .critics import CriticProtocol
 
 class AgentProtocol(ABC):
     actor: ActorProtocol

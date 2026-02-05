@@ -1,7 +1,7 @@
 from dataclasses import field
 
-from helloRL.modular.foundation import *
-from helloRL.modular.monte_carlo import RolloutMethodMonteCarlo
+from .foundation import *
+from .monte_carlo import RolloutMethodMonteCarlo
 
 @dataclass
 class Params:

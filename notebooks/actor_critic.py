@@ -22,12 +22,7 @@ import torch
 import numpy as np
 import gymnasium as gym
 
-from helloRL.modular.actors import *
-from helloRL.modular.critics import *
-from helloRL.modular.agents import *
-from helloRL.modular.params import *
-from helloRL.modular import trainer
-from helloRL.utils import plot
+from helloRL import *
 
 # %%
 seed = 0
@@ -70,7 +65,6 @@ plot.plot_session(
 # ```
 
 # %%
-from helloRL.utils import modal_training
 import modal
 from pathlib import Path
 

@@ -1,6 +1,7 @@
-# from . import hello
-# from helloRL import modular
+from .modules import *
+from .utils import *
 
-# __all__ = ["modular"]
+from . import trainer
+from . import modal_training
 
 __version__ = "1.0.0"

@@ -1,7 +1,7 @@
 import torch
 from dataclasses import dataclass
 
-from helloRL.modular.foundation import *
+from .foundation import *
 
 @dataclass
 class AdvantageMethodSingleStep(AdvantageMethod):

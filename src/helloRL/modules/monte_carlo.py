@@ -1,8 +1,8 @@
 import torch
 
-from helloRL.modular.rollout_data import ExperienceData
-from helloRL.modular.foundation import *
-from helloRL.modular.actors import ActorProtocol
+from .rollout_data import ExperienceData
+from .foundation import *
+from .actors import ActorProtocol
 
 class RolloutMethodMonteCarlo(RolloutMethod):
     @property

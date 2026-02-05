@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import torch
 
-from helloRL.modular.foundation import *
+from .foundation import *
     
 @dataclass
 class AdvantageTransformNormalize(AdvantageTransform):

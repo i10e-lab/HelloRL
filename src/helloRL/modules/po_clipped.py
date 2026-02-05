@@ -1,6 +1,6 @@
 import torch
 
-from helloRL.modular.actors import *
+from .actors import *
 
 class PolicyObjectiveMethodClipped(PolicyObjectiveMethod):
     def __init__(self, clip_range: float):

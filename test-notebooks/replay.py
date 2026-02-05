@@ -19,8 +19,8 @@
 
 # %%
 import torch
-from helloRL.modular.foundation import *
-from helloRL.modular.replay import ReplayBuffer
+
+from helloRL import *
 
 # %%
 torch.manual_seed(0)

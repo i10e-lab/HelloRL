@@ -1,6 +1,6 @@
 import torch
 
-from helloRL.modular.foundation import *
+from .foundation import *
 
 class GradientTransformClipNorm(GradientTransform):
     def __init__(self, max_norm: float):

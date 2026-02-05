@@ -9,8 +9,8 @@ import torch.nn as nn
 from typing import Iterable, Iterator
 
 from helloRL.utils.session_tracker import SessionTracker
-from helloRL.modular.agents import AgentProtocol
-from helloRL.modular.rollout_data import RolloutData
+from .agents import AgentProtocol
+from .rollout_data import RolloutData
 
 @dataclass
 class LRSchedule(ABC):

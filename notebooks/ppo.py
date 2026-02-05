@@ -27,17 +27,17 @@ import torch
 import numpy as np
 import gymnasium as gym
 
-from helloRL.modular.actors import *
-from helloRL.modular.critics import *
-from helloRL.modular.agents import *
-from helloRL.modular.params import *
-from helloRL.modular.a2c import *
-from helloRL.modular.grad_norm import *
-from helloRL.modular.gae import *
-from helloRL.modular.lr_anneal import *
-from helloRL.modular.epochs import *
-from helloRL.modular.po_clipped import *
-from helloRL.modular import trainer
+from helloRL.modules.actors import *
+from helloRL.modules.critics import *
+from helloRL.modules.agents import *
+from helloRL.modules.params import *
+from helloRL.modules.a2c import *
+from helloRL.modules.grad_norm import *
+from helloRL.modules.gae import *
+from helloRL.modules.lr_anneal import *
+from helloRL.modules.epochs import *
+from helloRL.modules.po_clipped import *
+from helloRL import trainer
 from helloRL.utils import plot
 
 # %%
@@ -93,7 +93,7 @@ plot.plot_session(
 # ```
 
 # %%
-from helloRL.utils import modal_training
+from helloRL import modal_training
 import modal
 from pathlib import Path
 

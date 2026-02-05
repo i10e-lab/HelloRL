@@ -1,7 +1,7 @@
 import torch
 
-from helloRL.modular.foundation import *
-from helloRL.modular.critics import CriticLossMethod
+from .foundation import *
+from .critics import CriticLossMethod
 
 class CriticLossMethodClipped(CriticLossMethod):
     def __init__(self, clip_range_vf: float):

@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Callable
 
-from helloRL.modular.rollout_data import RolloutData
+from .rollout_data import RolloutData
 
 HIDDEN_SIZES_DEFAULT = [64, 64]
 
