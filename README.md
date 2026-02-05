@@ -1,6 +1,6 @@
 # HelloRL
 
-Reinforcement Learning is usually confusing to get started, but HelloRL makes it quick and easy. It’s fully modular so you can upgrade your training once you’re ready for more, and even invent your own RL algorithms.
+Reinforcement Learning is usually confusing to get started, but HelloRL makes it quick and easy. It’s fully modular so you can upgrade your training once you’re ready for more, and even invent your own RL algorithms. Please ⭐ this repo if you find it useful.
 
 ![](banner.png)
 
@@ -10,10 +10,10 @@ Reinforcement Learning is a family of ML algorithms (like Actor Critic, A2C, PPO
 
 Trying to swap between them and keep your code working can be a nightmare. If you want to experiment with a new idea on top of Actor Critic, and then try it on a PPO implementation, you would have to spend hours integrating, and hope you didn’t make a mistake. It's a minefield -- it's so easy to trip yourself up and get something wrong without realising.
 
-![](lander-good.gif)
-
 ## Introducing HelloRL
 HelloRL flips this on its head, with **a single `train` function** and swappable modules, to build and mix together any RL algorithm easily.
+
+![](lander-good.gif)
 
 **HelloRL**:
 - A modular library for Reinforcement Learning
@@ -69,8 +69,6 @@ They also have a cool dashboard so you can track everything, but our progress mo
 Modal simply needs to setup auth, one time. Run `modal setup` or `python -m modal setup` on the command line, within the project. [Here is more info](https://modal.com/docs/guide).
 
 (I’m not affiliated with Modal. I am also not responsible if you run through your Modal credits or wrack up a bill.)
-
-
 
 
 ## Getting started with HelloRL
@@ -135,6 +133,10 @@ You can see examples of how to implement each major algorithm within the /notebo
 
 ---
 
-HelloRL is the first public release of [i10e](https://i10e.ai), a robot intelligence research lab based in London.
+HelloRL is the first public release from [i10e](https://i10e.ai), a robot intelligence research lab based in London.
 
-Built by Andrew Hart ([website](https://andrewhart.me) / [X](https://x.com/andrewhart)).
+Built by Andrew Hart ([website](https://andrewhart.me) / [X](https://x.com/andrewhart)). 
+
+Please star this repo ⭐ if you find it useful.
+
+![](stars.png)
