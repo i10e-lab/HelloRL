@@ -30,6 +30,10 @@ from helloRL.modular import trainer
 from helloRL.utils import plot
 
 # %%
+seed = 0
+torch.manual_seed(seed if seed is not None else torch.seed())
+np.random.seed(seed)
+
 env_name = 'LunarLander-v3'
 continuous = True
 n_timesteps = 100000
@@ -44,7 +48,7 @@ critic = Critic(state_dim=state_dim)
 agent = Agent(actor=actor, critics=[critic])
 params = Params()
 
-returns, lengths = trainer.train(agent, env_name, continuous, params, n_timesteps)
+returns, lengths = trainer.train(agent, env_name, continuous, params, n_timesteps, seed=seed)
 
 # %%
 # show plot

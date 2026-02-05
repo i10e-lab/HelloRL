@@ -15,7 +15,15 @@
 # ---
 
 # %% [markdown]
-# Actor Critic, CartPole
+# A2C, Lunar Lander Continuous
+#
+# This implementation matches SB3-Zoo, which has optimised HyperParameters and borrows many features from PPO. You could also implement A2C more simply -- with Actor Critic setup, but with A2C rollout.
+#
+# Not supported, from SB3-Zoo implementation:
+# - use_sde, (unclear if this param is actually used in SB3)
+# - vf_coef, we have separate actor/critic so not relevant
+# - rms_prop, we use adam optimizer. could be added.
+# - normalize (vec_normalize)
 
 # %%
 import torch
@@ -26,6 +34,10 @@ from helloRL.modular.actors import *
 from helloRL.modular.critics import *
 from helloRL.modular.agents import *
 from helloRL.modular.params import *
+from helloRL.modular.a2c import *
+from helloRL.modular.grad_norm import *
+from helloRL.modular.gae import *
+from helloRL.modular.lr_anneal import *
 from helloRL.modular import trainer
 from helloRL.utils import plot
 
@@ -34,25 +46,32 @@ seed = 0
 torch.manual_seed(seed if seed is not None else torch.seed())
 np.random.seed(seed)
 
-env_name = 'CartPole-v1'
-continuous = False
+env_name = 'LunarLander-v3'
+continuous = True
 n_timesteps = 100000
 
-env = gym.make(env_name)
+env = gym.make(env_name, continuous=continuous)
 state_dim = env.observation_space.shape[0]
-action_dim = env.action_space.n
+action_dim = env.action_space.shape[0]
+action_range = torch.tensor(np.stack([env.action_space.low, env.action_space.high]))
 
-actor = DiscreteActor(state_dim=state_dim, action_dim=action_dim)
+actor = StochasticActor(state_dim=state_dim, action_dim=action_dim, action_range=action_range)
 critic = Critic(state_dim=state_dim)
 agent = Agent(actor=actor, critics=[critic])
-params = Params()
+params = Params(
+    rollout_method=RolloutMethodA2C(n_steps=8, n_envs=4),
+    gradient_transform=GradientTransformClipNorm(max_norm=0.5),
+    advantage_method=AdvantageMethodGAE(lambda_=0.9),
+    lr_schedule=LRScheduleLinearAnneal(start_lr=0.0007, end_lr=0.0),
+    gamma=0.99
+)
 
 returns, lengths = trainer.train(agent, env_name, continuous, params, n_timesteps, seed=seed)
 
 # %%
 # show plot
 plot.plot_session(
-    returns, lengths, 'Actor Critic', env_name, continuous=continuous,
+    returns, lengths, 'A2C', env_name, continuous=continuous,
     n_timesteps=n_timesteps, agent=agent, params=params)
 
 # %% [markdown]
@@ -87,17 +106,24 @@ image = modal.Image.debian_slim()\
 
 # %%
 def standard():
-    env_name = 'CartPole-v1'
-    continuous = False
+    env_name = 'LunarLander-v3'
+    continuous = True
 
-    env = gym.make(env_name)
+    env = gym.make(env_name, continuous=continuous)
     state_dim = env.observation_space.shape[0]
-    action_dim = env.action_space.n
+    action_dim = env.action_space.shape[0]
+    action_range = torch.tensor(np.stack([env.action_space.low, env.action_space.high]))
 
-    actor = DiscreteActor(state_dim=state_dim, action_dim=action_dim)
+    actor = StochasticActor(state_dim=state_dim, action_dim=action_dim, action_range=action_range)
     critic = Critic(state_dim=state_dim)
     agent = Agent(actor=actor, critics=[critic])
-    params = Params()
+    params = Params(
+        rollout_method=RolloutMethodA2C(n_steps=8, n_envs=4),
+        gradient_transform=GradientTransformClipNorm(max_norm=0.5),
+        advantage_method=AdvantageMethodGAE(lambda_=0.9),
+        lr_schedule=LRScheduleLinearAnneal(start_lr=0.0007, end_lr=0.0),
+        gamma=0.99
+    )
 
     return agent, env_name, continuous, params
 
@@ -111,4 +137,4 @@ setup_func = standard
 results = modal_training.train(n_sessions, n_timesteps, setup_func, app, image, timeout=timeout)
 
 # %%
-modal_training.plot_results(results, 'Actor Critic', n_timesteps)
+modal_training.plot_results(results, 'A2C', n_timesteps)
