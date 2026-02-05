@@ -146,15 +146,19 @@ class ReplayBuffer(RolloutData):
         )
 
 class DataLoadMethodReplay(DataLoadMethod):
-    def __init__(self, capacity, state_dim, action_dim, batch_size: int):
+    def __init__(self, capacity, state_dim, action_dim, batch_size: int, minimum_size: int = 0):
         self.replay_buffer = ReplayBuffer(capacity, state_dim=state_dim, action_dim=action_dim)
         self.batch_size = batch_size
+        self.minimum_size = minimum_size
 
     def _iter(self, data: RolloutData) -> Iterator[RolloutData]:
         # store data in replay buffer, then fetch a random sample of mb_size, yield that
         self.replay_buffer.add(data)
 
         if self.replay_buffer.size < self.batch_size:
+            return  # not enough data yet
+        
+        if self.replay_buffer.size < self.minimum_size:
             return  # not enough data yet
 
         # only 1 batch
