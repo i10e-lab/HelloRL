@@ -35,5 +35,5 @@ class SimpleActor:
 # %%
 actor = SimpleActor()
 
-env = gym.make('LunarLander-v3', continuous=True, render_mode='rgb_array')
+env = gym.make('LunarLanderUpgraded-v1', continuous=True, render_mode='rgb_array')
 sim.run_sim_once(env, actor, render_params={})

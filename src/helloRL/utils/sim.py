@@ -5,6 +5,12 @@ from PIL import Image, ImageDraw, ImageFont
 import IPython.display as ipythondisplay
 import time
 
+gym.envs.registration.register(
+    id='LunarLanderUpgraded-v1',
+    entry_point='helloRL.utils.lunar_lander_upgraded:LunarLander',
+    max_episode_steps=1000,
+)
+
 def env_theme_for_env(env_name):
     if 'Lander' in env_name:
         return 'dark'
