@@ -51,7 +51,6 @@ HelloRL flips this on its head, with **a single `train` function** and swappable
 
 ## Extras
 
-
 ### Progress
 
 Progress utility gives nice in-line training progress with a trend graph. It makes things a little bit more sophisticated than printing a line for every 1000 timesteps. It'll show up automatically when you run `trainer.train()`.
@@ -70,6 +69,18 @@ Modal simply needs to setup auth, one time. Run `modal setup` or `python -m moda
 
 (I’m not affiliated with Modal. I am also not responsible if you run through your Modal credits or wrack up a bill.)
 
+
+### Lunar Lander Upgraded
+
+Lunar Lander was released 10 years ago, and it's a great testing environment for RL, but the graphics are quite primitive and uninspiring, so I upgraded them, as you can see in the gif further up. To get the shiny new version:
+
+```
+import helloRL.utils.sim
+
+env = gym.make('LunarLanderUpgraded-v1', continuous=True, render_mode='rgb_array')
+```
+
+The additional import also isn't required if you're already doing `import helloRL`.
 
 ## Getting started with HelloRL
 
