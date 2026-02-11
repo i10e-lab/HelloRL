@@ -99,6 +99,8 @@ def run_sim_once(env, agent, seed=None, options=None, render_params=None):
 
             if frame_title is not None:
                 title = f'{title}, {frame_title}' if title else frame_title
+
+            start = time.time()
                 
             render_env(env, reward, terminated, truncated, title=title)
 
@@ -106,7 +108,10 @@ def run_sim_once(env, agent, seed=None, options=None, render_params=None):
                 time.sleep(1)
             else:
                 fps = env.metadata.get('render_fps', 50)
-                time.sleep(1 / fps)
+                end = time.time()
+                elapsed = end - start
+                sleep_time = max(0, (1 / fps) - elapsed)
+                time.sleep(sleep_time)
         
         if complete:
             break
