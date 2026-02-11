@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.18.1
+#       jupytext_version: 1.19.1
 #   kernelspec:
 #     display_name: hellorl
 #     language: python
@@ -25,11 +25,7 @@ import gymnasium as gym
 from helloRL import *
 
 # %%
-seed = 0
-torch.manual_seed(seed if seed is not None else torch.seed())
-np.random.seed(seed)
-
-env_name = 'CartPole-v1'
+env_name = 'LunarLander-v3'
 continuous = False
 n_timesteps = 100000
 
@@ -37,12 +33,13 @@ env = gym.make(env_name)
 state_dim = env.observation_space.shape[0]
 action_dim = env.action_space.n
 
-actor = DiscreteActor(state_dim=state_dim, action_dim=action_dim)
+network = DiscreteActorNetwork(state_dim, action_dim)
+actor = DiscreteActor(network=network)
 critic = Critic(state_dim=state_dim)
 agent = Agent(actor=actor, critics=[critic])
 params = Params()
 
-returns, lengths = trainer.train(agent, env_name, continuous, params, n_timesteps, seed=seed)
+returns, lengths = trainer.train(agent, env_name, continuous, params, n_timesteps)
 
 # %%
 # show plot
@@ -88,7 +85,8 @@ def standard():
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.n
 
-    actor = DiscreteActor(state_dim=state_dim, action_dim=action_dim)
+    network = DiscreteActorNetwork(state_dim, action_dim)
+    actor = DiscreteActor(network=network)
     critic = Critic(state_dim=state_dim)
     agent = Agent(actor=actor, critics=[critic])
     params = Params()

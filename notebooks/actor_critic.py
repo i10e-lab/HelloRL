@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.18.1
+#       jupytext_version: 1.19.1
 #   kernelspec:
 #     display_name: hellorl
 #     language: python
@@ -38,7 +38,8 @@ state_dim = env.observation_space.shape[0]
 action_dim = env.action_space.shape[0]
 action_range = torch.tensor(np.stack([env.action_space.low, env.action_space.high]))
 
-actor = StochasticActor(state_dim=state_dim, action_dim=action_dim, action_range=action_range)
+actor_network = ContinuousActorNetwork(state_dim, action_dim, action_range)
+actor = StochasticActor(network=actor_network)
 critic = Critic(state_dim=state_dim)
 agent = Agent(actor=actor, critics=[critic])
 params = Params()
@@ -90,7 +91,8 @@ def standard():
     action_dim = env.action_space.shape[0]
     action_range = torch.tensor(np.stack([env.action_space.low, env.action_space.high]))
 
-    actor = StochasticActor(state_dim=state_dim, action_dim=action_dim, action_range=action_range)
+    network = ContinuousActorNetwork(state_dim, action_dim, action_range)
+    actor = StochasticActor(network=network)
     critic = Critic(state_dim=state_dim)
     agent = Agent(actor=actor, critics=[critic])
     params = Params()

@@ -141,10 +141,10 @@ class DistributionalActor(ActorProtocol, nn.Module):
         return action
 
 class DiscreteActor(DistributionalActor):
-    def __init__(self, state_dim, action_dim, hidden_sizes=HIDDEN_SIZES_DEFAULT, params=DistributionalActorParams()):
+    def __init__(self, network: DiscreteActorNetwork, params=DistributionalActorParams()):
         super(DiscreteActor, self).__init__(params=params)
 
-        self.network = DiscreteActorNetwork(state_dim, action_dim, hidden_sizes=hidden_sizes)
+        self.network = network
 
     def output(self, state): # action: (batch_size, 1), log_prob: (batch_size, 1)
         actor_logits = self.network.forward(state)
@@ -193,10 +193,10 @@ class ContinuousActorNetwork(nn.Module):
         return x
     
 class StochasticActor(DistributionalActor):
-    def __init__(self, state_dim, action_dim, action_range, hidden_sizes=HIDDEN_SIZES_DEFAULT, params=DistributionalActorParams()):
+    def __init__(self, network: ContinuousActorNetwork, params=DistributionalActorParams()):
         super(StochasticActor, self).__init__(params=params)
-        self.network = ContinuousActorNetwork(state_dim, action_dim, action_range, hidden_sizes=hidden_sizes)
-        self.log_std = nn.Parameter(torch.zeros(action_dim))
+        self.network = network
+        self.log_std = nn.Parameter(torch.zeros(network.head.out_features))
 
     def output(self, state): # action: (batch_size, 1), log_prob: (batch_size, 1)
         # mean, also referred to as 'mu'
@@ -221,9 +221,9 @@ class DeterministicActorParams(ActorParams):
     exploration_std: float = 0.1
     
 class DeterministicActor(ActorProtocol, nn.Module):
-    def __init__(self, state_dim, action_dim, action_range, hidden_sizes=HIDDEN_SIZES_DEFAULT, params=DeterministicActorParams()):
+    def __init__(self, network: ContinuousActorNetwork, params=DeterministicActorParams()):
         super(DeterministicActor, self).__init__()
-        self.network = ContinuousActorNetwork(state_dim, action_dim, action_range, hidden_sizes=hidden_sizes)
+        self.network = network
         self.params = params
 
     def forward(self, state): # action: (batch_size, 1)
