@@ -159,10 +159,11 @@ class ProgressBar:
         self.close()
 
 class RemoteProgressBar(ProgressBar):
-    def __init__(self, title, n_steps, n_sessions):
+    def __init__(self, title, n_steps, n_sessions, total_machines=None):
         super().__init__(title, n_steps)
 
         self.n_sessions = n_sessions
+        self.total_machines = total_machines if total_machines is not None else n_sessions
         self.completed_sessions = 0
         self._update_format()
 
@@ -170,9 +171,29 @@ class RemoteProgressBar(ProgressBar):
         completed_steps_str = f"{self.pbar.n}/{self.n_steps}"
         completed_steps_str = color_text(completed_steps_str, pb_progress_color)
 
-        completed_sessions_str = f"{self.completed_sessions}/{self.n_sessions}"
-        completed_sessions_str = color_text(completed_sessions_str, pb_progress_color)
-        custom_format = f'{{l_bar}}{{bar:20}}| Steps={completed_steps_str}, Sessions={completed_sessions_str}, ⏱️={{elapsed}}, est=<{{remaining}}{{postfix}}]'
+        if self.total_machines > self.n_sessions:
+            # Show overflow context: "Leading X of Y machines"
+            completed_sessions_str = f"{self.completed_sessions}/{self.n_sessions}"
+            completed_sessions_str = color_text(completed_sessions_str, pb_progress_color)
+
+            total_machines_str = str(self.total_machines)
+            total_machines_str = color_text(total_machines_str, pb_variable_color)
+
+            custom_format = (
+                f'{{l_bar}}{{bar:20}}| Steps={completed_steps_str}, '
+                f'Leading={completed_sessions_str} of {total_machines_str} machines, '
+                f'⏱️={{elapsed}}, est=<{{remaining}}{{postfix}}]'
+            )
+        else:
+            # Original format when no overflow
+            completed_sessions_str = f"{self.completed_sessions}/{self.n_sessions}"
+            completed_sessions_str = color_text(completed_sessions_str, pb_progress_color)
+            custom_format = (
+                f'{{l_bar}}{{bar:20}}| Steps={completed_steps_str}, '
+                f'Sessions={completed_sessions_str}, '
+                f'⏱️={{elapsed}}, est=<{{remaining}}{{postfix}}]'
+            )
+
         self.pbar.bar_format = custom_format
         self.pbar.refresh()
 
