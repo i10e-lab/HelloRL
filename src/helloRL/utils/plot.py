@@ -11,7 +11,7 @@ def _generate_title(
         num_episodes, mean_score, mean_length, window_length,
         params, agent=None, num_sessions=None):
     """Generate a consistent title for plotting functions."""
-    title_parts = [f'{algo_name}, {env_name}, continuous: {continuous}']
+    title_parts = [f'{algo_name}\n{env_name}, continuous: {continuous}']
     if num_sessions is not None:
         title_parts.append(f', sessions: {num_sessions}')
     if nb_name:
