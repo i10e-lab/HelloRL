@@ -9,7 +9,7 @@ from collections import Counter
 def _generate_title(
         algo_name, env_name, continuous, nb_name,
         num_episodes, mean_score, mean_length, window_length,
-        params, agent=None, num_sessions=None):
+        params, agent=None, num_sessions=None, std=None):
     """Generate a consistent title for plotting functions."""
     title_parts = [f'{algo_name}\n{env_name}, continuous: {continuous}']
     if num_sessions is not None:
@@ -47,8 +47,15 @@ def _generate_title(
 
     params_str = _params_str(params)
     title_parts.append(f'\nparams: {params_str}')
-    title_parts.append(f'\nepisodes: {num_episodes:.2f}, (mean scores: {mean_score:.2f}, '
+
+    # Add consistency metric if available (only for multiple sessions)
+
+    title_parts.append(f'\neps: {num_episodes:.2f}, (mean scores: {mean_score:.2f}, '
                        f'mean length: {mean_length:.2f}) -{window_length} eps')
+    
+    if std is not None:
+        title_parts.append(f', std: {std:.2f}')
+
     return ''.join(title_parts)
 
 def _params_str(params):
@@ -110,6 +117,36 @@ def moving_average(values, window):
     """
     weights = np.repeat(1.0, window) / window
     return np.convolve(values, weights, "valid")
+
+def _calculate_linspaces(sessions, average_window, n_timesteps):
+    """Calculate interpolated linspaces for each session.
+
+    Args:
+        sessions: List of (scores, timesteps) tuples
+        average_window: Window size for moving average
+        n_timesteps: Total timesteps for interpolation
+
+    Returns:
+        List of (x_sampled, y_sampled) tuples, one per session.
+    """
+    linspaces = []
+    for scores, timesteps in sessions:
+        if len(scores) >= average_window:
+            averages = moving_average(scores, window=average_window)
+            truncated_timesteps = moving_average(timesteps, window=average_window)
+            ls = scores_timesteps_to_linspace(averages, truncated_timesteps,
+                                              n_timesteps, increments=64)
+            linspaces.append(ls)
+    return linspaces
+
+def _calculate_std(linspaces):
+    stds = []
+
+    for i in range(len(linspaces[0][1])):
+        scores = [linspaces[j][1][i] for j in range(len(linspaces))]
+        stds.append(np.std(scores))
+
+    return np.mean(stds)
 
 def plot_loss(losses, title=None, ylabel='Loss', ylim=None, average_window=None):
     """
@@ -306,6 +343,12 @@ def plot_sessions(
     last_episode_lengths_mean = np.mean([np.mean(episode_lengths[-window_length:])
         for episode_lengths in all_episode_lengths])
 
+    if window_length is not None and len(sessions) > 1 and n_timesteps is not None:
+        linspaces = _calculate_linspaces(sessions, window_length, n_timesteps)
+        std = _calculate_std(linspaces)
+    else:
+        std = None
+
     title = _generate_title(
         algo_name, env_name, continuous, nb_name,
         num_episodes=len(flattened_scores),
@@ -314,7 +357,8 @@ def plot_sessions(
         window_length=window_length,
         params=params,
         agent=agent,
-        num_sessions=len(all_results)
+        num_sessions=len(all_results),
+        std=std
     )
 
     plot_sessions_with_timesteps(
