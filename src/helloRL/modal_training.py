@@ -105,22 +105,26 @@ def train_session_on_modal_with_func(train_func, session_id, n_timesteps, progre
 
     return train_func_return
 
-def create_modal_train_function(app, image, timeout=3600):
+def create_modal_train_function(app, image, train_func=None, timeout=3600):
+    if train_func is None:
+        train_func = trainer.train
+
     @app.function(image=image, timeout=timeout, serialized=True)
     def _modal_train(n_timesteps, setup_func, session_id=None, progress_dict=None):
-        agent, env_name, continuous, params = setup_func()
+        agent, env_name, continuous, params, seed = setup_func()
 
-        training_func = partial(trainer.train, agent, env_name, continuous=continuous, 
-                               n_timesteps=n_timesteps, should_print=False)
+        training_func = partial(
+            train_func, agent, env_name, continuous=continuous,
+            params=params, n_timesteps=n_timesteps, should_print=False, seed=seed)
         
-        train_results = train_session_on_modal_with_func(training_func, session_id, 
-                                                          n_timesteps, progress_dict)
+        train_results = train_session_on_modal_with_func(
+            training_func, session_id, n_timesteps, progress_dict)
         
         return (*train_results, agent, env_name, continuous, params)
     
     return _modal_train
 
-def train(n_sessions, n_timesteps, setup_func, app, image, timeout=3600, overflow_machines=0):
+def train(n_sessions, n_timesteps, setup_func, train_func=None, app=None, image=None, timeout=3600, overflow_machines=0):
     """
     Train using Modal with optional overflow machines for robustness.
 
@@ -138,7 +142,7 @@ def train(n_sessions, n_timesteps, setup_func, app, image, timeout=3600, overflo
     """
     total_machines = n_sessions + overflow_machines
     # Create the modal function before entering app.run() so it gets registered
-    modal_train = create_modal_train_function(app, image, timeout)
+    modal_train = create_modal_train_function(app, image, train_func=train_func, timeout=timeout)
 
     with app.run():
         progress_dict = modal.Dict.from_name("training-progress", create_if_missing=True)
