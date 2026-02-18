@@ -24,9 +24,17 @@ def _generate_title(
         actor_params_str = _params_str(agent.actor.params) if hasattr(agent.actor, 'params') and agent.actor.params is not None else ''
         title_parts.append(f'\n{actor_class_name}{f", {actor_params_str}" if actor_params_str else ""}')
 
+        # if agent only has 1 critic, ie agent.critic, then use thas as critics = [critic]
+        if hasattr(agent, 'critic'):
+            critics = [agent.critic]
+        elif hasattr(agent, 'critics'):
+            critics = agent.critics
+        else:
+            critics = []
+
         # Group critics by class name and params
         critic_signatures = []
-        for critic in agent.critics:
+        for critic in critics:
             critic_class_name = critic.__class__.__name__
             critic_params_str = _params_str(critic.params) if hasattr(critic, 'params') and critic.params is not None else ''
             signature = (critic_class_name, critic_params_str)
@@ -45,8 +53,9 @@ def _generate_title(
         agent_params_str = _params_str(agent.params) if hasattr(agent, 'params') and agent.params is not None else ''
         title_parts.append(f'\n{agent_class_name}{f", {agent_params_str}" if agent_params_str else ""}')
 
-    params_str = _params_str(params)
-    title_parts.append(f'\nparams: {params_str}')
+    if params is not None:
+        params_str = _params_str(params)
+        title_parts.append(f'\nparams: {params_str}')
 
     # Add consistency metric if available (only for multiple sessions)
 
