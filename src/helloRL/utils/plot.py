@@ -82,6 +82,10 @@ def _params_str(params):
 
             individual_name_string = f"{param_name}: {name}"
             individual_name_strings.append(individual_name_string)
+        # elif is string, int, float, or other simple type
+        elif isinstance(param_value, (str, int, float, bool)):
+            individual_name_string = f"{param_name}: {param_value}"
+            individual_name_strings.append(individual_name_string)
 
     name_string = ''
 
