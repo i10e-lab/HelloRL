@@ -144,7 +144,7 @@ You can see examples of how to implement each major algorithm within the /notebo
 
 ---
 
-HelloRL is the first public release from [base8](https://base8.ai), a robot intelligence research lab based in London.
+HelloRL is the first public release from [Base Intelligence](https://BaseInt.com), a robot intelligence research lab based in London.
 
 Built by Andrew Hart ([website](https://andrewhart.me) / [X](https://x.com/andrewhart)). 
 
